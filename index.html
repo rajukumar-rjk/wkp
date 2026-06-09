@@ -7,98 +7,63 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   :root {
-    --primary: #1a56db;
-    --primary-dark: #1039a0;
-    --accent: #f59e0b;
-    --yes: #10b981;
-    --no: #ef4444;
-    --bg: #f0f4f8;
-    --card: #ffffff;
-    --border: #e2e8f0;
-    --text: #1e293b;
-    --muted: #64748b;
-    --sidebar: #1e293b;
+    --primary:#1a56db; --accent:#f59e0b; --yes:#10b981; --no:#ef4444;
+    --bg:#f0f4f8; --card:#ffffff; --border:#e2e8f0; --text:#1e293b;
+    --muted:#64748b; --sidebar:#1e293b;
   }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family: 'Segoe UI', Arial, sans-serif; background:var(--bg); color:var(--text); }
-
-  /* Layout */
-  .app { display:flex; min-height:100vh; }
-  .sidebar { width:220px; background:var(--sidebar); color:#fff; display:flex; flex-direction:column; flex-shrink:0; }
-  .sidebar-header { padding:20px 16px 16px; border-bottom:1px solid rgba(255,255,255,0.1); }
-  .sidebar-header h2 { font-size:14px; font-weight:700; color:#fff; letter-spacing:.5px; }
-  .sidebar-header p { font-size:11px; color:#94a3b8; margin-top:2px; }
-  .sidebar nav { flex:1; padding:12px 0; }
-  .nav-item { display:flex; align-items:center; gap:10px; padding:10px 16px; cursor:pointer; font-size:13px; color:#94a3b8; transition:all .15s; border-left:3px solid transparent; }
-  .nav-item:hover { background:rgba(255,255,255,0.06); color:#fff; }
-  .nav-item.active { background:rgba(26,86,219,0.25); color:#fff; border-left-color:var(--primary); }
-  .nav-item .icon { font-size:16px; width:18px; text-align:center; }
-  .main { flex:1; display:flex; flex-direction:column; overflow:auto; }
-  .topbar { background:#fff; border-bottom:1px solid var(--border); padding:12px 24px; display:flex; align-items:center; justify-content:space-between; }
-  .topbar h1 { font-size:18px; font-weight:700; color:var(--text); }
-  .topbar p { font-size:12px; color:var(--muted); }
-  .content { padding:20px 24px; flex:1; }
-  .page { display:none; }
-  .page.active { display:block; }
-
-  /* Filters */
-  .filter-row { display:flex; gap:12px; margin-bottom:18px; flex-wrap:wrap; align-items:center; }
-  .filter-group { display:flex; align-items:center; gap:8px; background:#fff; border:1px solid var(--border); border-radius:8px; padding:6px 12px; }
-  .filter-group label { font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.4px; }
-  .filter-group select { border:none; outline:none; font-size:13px; color:var(--text); background:transparent; cursor:pointer; }
-  .filter-reset { background:var(--primary); color:#fff; border:none; border-radius:8px; padding:8px 16px; font-size:12px; cursor:pointer; font-weight:600; }
-
-  /* Summary cards */
-  .summary-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; margin-bottom:20px; }
-  .stat-card { background:var(--card); border-radius:12px; padding:16px; border:1px solid var(--border); }
-  .stat-card .label { font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; }
-  .stat-card .value { font-size:28px; font-weight:800; color:var(--primary); line-height:1; }
-  .stat-card .sub { font-size:11px; color:var(--muted); margin-top:4px; }
-  .stat-card.green .value { color:var(--yes); }
-  .stat-card.orange .value { color:var(--accent); }
-
-  /* Chart grid */
-  .chart-grid { display:grid; gap:16px; }
-  .chart-grid.cols2 { grid-template-columns:1fr 1fr; }
-  .chart-grid.cols3 { grid-template-columns:1fr 1fr 1fr; }
-  .chart-card { background:var(--card); border-radius:12px; padding:16px; border:1px solid var(--border); }
-  .chart-card h3 { font-size:13px; font-weight:700; color:var(--text); margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--border); }
-  .chart-card.full { grid-column:1/-1; }
-  .chart-wrap { position:relative; }
-
-  /* Yes/No bar */
-  .yn-table { width:100%; border-collapse:collapse; }
-  .yn-table th { font-size:10px; color:var(--muted); font-weight:700; text-transform:uppercase; padding:4px 8px; text-align:left; }
-  .yn-table td { padding:5px 8px; font-size:12px; border-top:1px solid var(--border); }
-  .yn-table tr:hover td { background:#f8fafc; }
-  .q-label { color:var(--text); max-width:340px; }
-  .yn-bar-wrap { display:flex; align-items:center; gap:6px; }
-  .yn-bar { height:12px; border-radius:6px; display:flex; overflow:hidden; width:140px; background:#e2e8f0; flex-shrink:0; }
-  .yn-bar .yes-seg { background:var(--yes); }
-  .yn-bar .no-seg { background:var(--no); }
-  .yn-pct { font-size:11px; color:var(--muted); width:36px; text-align:right; flex-shrink:0; }
-  .yes-pill { color:var(--yes); font-weight:700; }
-  .no-pill { color:var(--no); font-weight:700; }
-  .badge { display:inline-block; padding:1px 7px; border-radius:20px; font-size:10px; font-weight:700; }
-  .badge.yes { background:#d1fae5; color:#065f46; }
-  .badge.no { background:#fee2e2; color:#991b1b; }
-
-  /* Responsive */
-  @media(max-width:900px){ .chart-grid.cols2,.chart-grid.cols3{grid-template-columns:1fr;} .sidebar{width:56px;} .sidebar .nav-item span.label{display:none;} .sidebar-header p,.sidebar-header h2{display:none;} }
-
-  .section-title { font-size:15px; font-weight:700; color:var(--text); margin:18px 0 10px; display:flex; align-items:center; gap:8px; }
-  .section-title::after { content:''; flex:1; height:1px; background:var(--border); }
-  .tab-pills { display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
-  .tab-pill { padding:5px 14px; border-radius:20px; font-size:12px; font-weight:600; cursor:pointer; background:#e2e8f0; color:var(--muted); border:none; }
-  .tab-pill.active { background:var(--primary); color:#fff; }
-  .q-section { display:none; }
-  .q-section.active { display:block; }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);}
+  .app{display:flex;min-height:100vh;}
+  .sidebar{width:220px;background:var(--sidebar);color:#fff;display:flex;flex-direction:column;flex-shrink:0;}
+  .sidebar-header{padding:20px 16px 16px;border-bottom:1px solid rgba(255,255,255,0.1);}
+  .sidebar-header h2{font-size:14px;font-weight:700;color:#fff;letter-spacing:.5px;}
+  .sidebar-header p{font-size:11px;color:#94a3b8;margin-top:2px;}
+  .sidebar nav{flex:1;padding:12px 0;}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;font-size:13px;color:#94a3b8;transition:all .15s;border-left:3px solid transparent;}
+  .nav-item:hover{background:rgba(255,255,255,0.06);color:#fff;}
+  .nav-item.active{background:rgba(26,86,219,0.25);color:#fff;border-left-color:var(--primary);}
+  .nav-item .icon{font-size:16px;width:18px;text-align:center;}
+  .main{flex:1;display:flex;flex-direction:column;overflow:auto;}
+  .topbar{background:#fff;border-bottom:1px solid var(--border);padding:12px 24px;}
+  .topbar h1{font-size:18px;font-weight:700;color:var(--text);}
+  .topbar p{font-size:12px;color:var(--muted);}
+  .content{padding:20px 24px;flex:1;}
+  .page{display:none;}.page.active{display:block;}
+  .filter-row{display:flex;gap:12px;margin-bottom:18px;flex-wrap:wrap;align-items:center;}
+  .filter-group{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--border);border-radius:8px;padding:6px 12px;}
+  .filter-group label{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px;}
+  .filter-group select{border:none;outline:none;font-size:13px;color:var(--text);background:transparent;cursor:pointer;}
+  .filter-reset{background:var(--primary);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:12px;cursor:pointer;font-weight:600;}
+  .summary-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:20px;}
+  .stat-card{background:var(--card);border-radius:12px;padding:16px;border:1px solid var(--border);}
+  .stat-card .label{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+  .stat-card .value{font-size:28px;font-weight:800;color:var(--primary);line-height:1;}
+  .stat-card .sub{font-size:11px;color:var(--muted);margin-top:4px;}
+  .stat-card.green .value{color:var(--yes);}
+  .stat-card.orange .value{color:var(--accent);}
+  .chart-grid{display:grid;gap:16px;}
+  .chart-grid.cols2{grid-template-columns:1fr 1fr;}
+  .chart-card{background:var(--card);border-radius:12px;padding:16px;border:1px solid var(--border);}
+  .chart-card h3{font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+  .chart-card.full{grid-column:1/-1;}
+  .chart-wrap{position:relative;}
+  .yn-table{width:100%;border-collapse:collapse;}
+  .yn-table th{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;padding:6px 8px;text-align:left;background:#f8fafc;}
+  .yn-table td{padding:6px 8px;font-size:12px;border-top:1px solid var(--border);}
+  .yn-table tr:hover td{background:#f8fafc;}
+  .q-label{color:var(--text);max-width:360px;}
+  .yn-bar-wrap{display:flex;align-items:center;gap:6px;}
+  .yn-bar{height:12px;border-radius:6px;display:flex;overflow:hidden;width:140px;background:#e2e8f0;flex-shrink:0;}
+  .yn-bar .yes-seg{background:var(--yes);}
+  .yn-pct{font-size:11px;color:var(--muted);width:36px;text-align:right;flex-shrink:0;}
+  .yes-pill{color:var(--yes);font-weight:700;}
+  .no-pill{color:var(--no);font-weight:700;}
+  @media(max-width:900px){.chart-grid.cols2{grid-template-columns:1fr;}.sidebar{width:56px;}.sidebar .nav-item span.label{display:none;}.sidebar-header p,.sidebar-header h2{display:none;}}
 </style>
 </head>
 <body>
 <div class="app">
 
-<!-- Sidebar -->
 <div class="sidebar">
   <div class="sidebar-header">
     <h2>📊 POST ASSESSMENT</h2>
@@ -113,28 +78,25 @@
   </nav>
 </div>
 
-<!-- Main -->
 <div class="main">
   <div class="topbar">
-    <div>
-      <h1 id="page-title">Member Profile</h1>
-      <p id="page-sub">Overview of enrolled women members across districts</p>
-    </div>
+    <h1 id="page-title">Member Profile</h1>
+    <p id="page-sub">Active &amp; enrolled women members across districts</p>
   </div>
   <div class="content">
 
-    <!-- ===== MEMBER PROFILE ===== -->
+    <!-- MEMBER PROFILE -->
     <div class="page active" id="page-member">
       <div class="filter-row">
         <div class="filter-group"><label>District</label><select id="f-member-district" onchange="applyMemberFilter()"><option value="">All</option><option>Barwani</option><option>Raisen</option><option>Vidisha</option></select></div>
         <div class="filter-group"><label>Block</label><select id="f-member-block" onchange="applyMemberFilter()"><option value="">All</option><option>Barwani</option><option>Pati</option><option>Obedullaganj</option><option>Sanchi</option><option>Ganj Basoda</option><option>Vidisha</option></select></div>
         <button class="filter-reset" onclick="resetFilter('member')">Reset</button>
       </div>
-      <div class="summary-row" id="member-stats">
-        <div class="stat-card"><div class="label">Total Members</div><div class="value" id="m-total">140</div><div class="sub">enrolled women</div></div>
+      <div class="summary-row">
+        <div class="stat-card"><div class="label">Total Members</div><div class="value" id="m-total">133</div><div class="sub">Active / enrolled</div></div>
         <div class="stat-card orange"><div class="label">Total Districts</div><div class="value" id="m-dist">3</div><div class="sub">districts covered</div></div>
         <div class="stat-card green"><div class="label">Total Blocks</div><div class="value" id="m-block">6</div><div class="sub">blocks covered</div></div>
-        <div class="stat-card"><div class="label">SHG Members</div><div class="value" id="m-shg">50</div><div class="sub">35.7% of total</div></div>
+        <div class="stat-card"><div class="label">SHG Members</div><div class="value" id="m-shg">50</div><div class="sub">of active members</div></div>
       </div>
       <div class="chart-grid cols2">
         <div class="chart-card"><h3>📍 Members by District</h3><div class="chart-wrap" style="height:240px"><canvas id="c-m-district"></canvas></div></div>
@@ -146,7 +108,7 @@
       </div>
     </div>
 
-    <!-- ===== FINANCIAL LITERACY ===== -->
+    <!-- FINANCIAL LITERACY -->
     <div class="page" id="page-financial">
       <div class="filter-row">
         <div class="filter-group"><label>District</label><select id="f-fin-district" onchange="applyQFilter('financial')"><option value="">All</option><option>Barwani</option><option>Raisen</option><option>Vidisha</option></select></div>
@@ -155,24 +117,16 @@
       </div>
       <div class="summary-row">
         <div class="stat-card"><div class="label">Total Responses</div><div class="value" id="fin-total">130</div></div>
-        <div class="stat-card orange"><div class="label">Districts</div><div class="value" id="fin-dist">3</div></div>
-        <div class="stat-card green"><div class="label">Blocks</div><div class="value" id="fin-block">6</div></div>
-        <div class="stat-card"><div class="label">Avg Yes Rate</div><div class="value" id="fin-avgyes">—</div><div class="sub">across all questions</div></div>
+        <div class="stat-card orange"><div class="label">Total Districts</div><div class="value" id="fin-dist">3</div></div>
+        <div class="stat-card green"><div class="label">Total Blocks</div><div class="value" id="fin-block">6</div></div>
       </div>
-      <div class="chart-grid cols2" style="margin-bottom:16px">
-        <div class="chart-card"><h3>📊 Yes vs No — Overview (Top 10 Q)</h3><div class="chart-wrap" style="height:300px"><canvas id="c-fin-bar"></canvas></div></div>
-        <div class="chart-card"><h3>🌡️ Overall Pass Rate by Question</h3><div class="chart-wrap" style="height:300px"><canvas id="c-fin-radar"></canvas></div></div>
-      </div>
-      <div class="chart-card full">
-        <h3>📋 All Questions — Yes / No Breakdown</h3>
-        <table class="yn-table" id="tbl-financial">
-          <thead><tr><th>#</th><th>Question</th><th>Yes</th><th>No</th><th>Yes %</th><th style="width:180px">Distribution</th></tr></thead>
-          <tbody id="tbody-financial"></tbody>
-        </table>
+      <div class="chart-card" style="margin-bottom:16px">
+        <h3>📋 Question Wise Response</h3>
+        <table class="yn-table"><thead><tr><th>#</th><th>Question</th><th>Yes</th><th>No</th><th>Yes %</th><th style="width:180px">Distribution</th></tr></thead><tbody id="tbody-financial"></tbody></table>
       </div>
     </div>
 
-    <!-- ===== DIGITAL LITERACY ===== -->
+    <!-- DIGITAL LITERACY -->
     <div class="page" id="page-digital">
       <div class="filter-row">
         <div class="filter-group"><label>District</label><select id="f-dig-district" onchange="applyQFilter('digital')"><option value="">All</option><option>Barwani</option><option>Raisen</option><option>Vidisha</option></select></div>
@@ -181,21 +135,16 @@
       </div>
       <div class="summary-row">
         <div class="stat-card"><div class="label">Total Responses</div><div class="value" id="dig-total">114</div></div>
-        <div class="stat-card orange"><div class="label">Districts</div><div class="value" id="dig-dist">3</div></div>
-        <div class="stat-card green"><div class="label">Blocks</div><div class="value" id="dig-block">6</div></div>
-        <div class="stat-card"><div class="label">Avg Yes Rate</div><div class="value" id="dig-avgyes">—</div></div>
+        <div class="stat-card orange"><div class="label">Total Districts</div><div class="value" id="dig-dist">3</div></div>
+        <div class="stat-card green"><div class="label">Total Blocks</div><div class="value" id="dig-block">6</div></div>
       </div>
-      <div class="chart-grid cols2" style="margin-bottom:16px">
-        <div class="chart-card"><h3>📊 Yes vs No Overview</h3><div class="chart-wrap" style="height:300px"><canvas id="c-dig-bar"></canvas></div></div>
-        <div class="chart-card"><h3>✅ Pass Rate by Topic</h3><div class="chart-wrap" style="height:300px"><canvas id="c-dig-doughnut"></canvas></div></div>
-      </div>
-      <div class="chart-card full">
-        <h3>📋 All Questions — Yes / No Breakdown</h3>
+      <div class="chart-card" style="margin-bottom:16px">
+        <h3>📋 Question Wise Response</h3>
         <table class="yn-table"><thead><tr><th>#</th><th>Question</th><th>Yes</th><th>No</th><th>Yes %</th><th style="width:180px">Distribution</th></tr></thead><tbody id="tbody-digital"></tbody></table>
       </div>
     </div>
 
-    <!-- ===== ACCESS TO MARKET ===== -->
+    <!-- ACCESS TO MARKET -->
     <div class="page" id="page-market">
       <div class="filter-row">
         <div class="filter-group"><label>District</label><select id="f-mkt-district" onchange="applyQFilter('market')"><option value="">All</option><option>Barwani</option><option>Raisen</option><option>Vidisha</option></select></div>
@@ -204,21 +153,19 @@
       </div>
       <div class="summary-row">
         <div class="stat-card"><div class="label">Total Responses</div><div class="value" id="mkt-total">106</div></div>
-        <div class="stat-card orange"><div class="label">Districts</div><div class="value" id="mkt-dist">3</div></div>
-        <div class="stat-card green"><div class="label">Blocks</div><div class="value" id="mkt-block">6</div></div>
-        <div class="stat-card"><div class="label">Avg Yes Rate</div><div class="value" id="mkt-avgyes">—</div></div>
+        <div class="stat-card orange"><div class="label">Total Districts</div><div class="value" id="mkt-dist">3</div></div>
+        <div class="stat-card green"><div class="label">Total Blocks</div><div class="value" id="mkt-block">6</div></div>
       </div>
       <div class="chart-grid cols2" style="margin-bottom:16px">
-        <div class="chart-card"><h3>📊 Yes vs No Overview</h3><div class="chart-wrap" style="height:300px"><canvas id="c-mkt-bar"></canvas></div></div>
-        <div class="chart-card"><h3>📈 Question-wise Yes %</h3><div class="chart-wrap" style="height:300px"><canvas id="c-mkt-line"></canvas></div></div>
+        <div class="chart-card full"><h3>📈 Question Wise Yes %</h3><div class="chart-wrap" style="height:280px"><canvas id="c-mkt-line"></canvas></div></div>
       </div>
-      <div class="chart-card full">
-        <h3>📋 All Questions — Yes / No Breakdown</h3>
+      <div class="chart-card" style="margin-bottom:16px">
+        <h3>📋 Question Wise Response</h3>
         <table class="yn-table"><thead><tr><th>#</th><th>Question</th><th>Yes</th><th>No</th><th>Yes %</th><th style="width:180px">Distribution</th></tr></thead><tbody id="tbody-market"></tbody></table>
       </div>
     </div>
 
-    <!-- ===== BUSINESS DEVELOPMENT ===== -->
+    <!-- BUSINESS DEVELOPMENT -->
     <div class="page" id="page-business">
       <div class="filter-row">
         <div class="filter-group"><label>District</label><select id="f-biz-district" onchange="applyQFilter('business')"><option value="">All</option><option>Barwani</option><option>Raisen</option><option>Vidisha</option></select></div>
@@ -227,16 +174,14 @@
       </div>
       <div class="summary-row">
         <div class="stat-card"><div class="label">Total Responses</div><div class="value" id="biz-total">108</div></div>
-        <div class="stat-card orange"><div class="label">Districts</div><div class="value" id="biz-dist">3</div></div>
-        <div class="stat-card green"><div class="label">Blocks</div><div class="value" id="biz-block">6</div></div>
-        <div class="stat-card"><div class="label">Avg Yes Rate</div><div class="value" id="biz-avgyes">—</div></div>
+        <div class="stat-card orange"><div class="label">Total Districts</div><div class="value" id="biz-dist">3</div></div>
+        <div class="stat-card green"><div class="label">Total Blocks</div><div class="value" id="biz-block">6</div></div>
       </div>
       <div class="chart-grid cols2" style="margin-bottom:16px">
-        <div class="chart-card"><h3>📊 Yes vs No Overview</h3><div class="chart-wrap" style="height:300px"><canvas id="c-biz-bar"></canvas></div></div>
-        <div class="chart-card"><h3>📈 Question-wise Yes %</h3><div class="chart-wrap" style="height:300px"><canvas id="c-biz-line"></canvas></div></div>
+        <div class="chart-card full"><h3>📈 Question Wise Yes %</h3><div class="chart-wrap" style="height:280px"><canvas id="c-biz-line"></canvas></div></div>
       </div>
-      <div class="chart-card full">
-        <h3>📋 All Questions — Yes / No Breakdown</h3>
+      <div class="chart-card" style="margin-bottom:16px">
+        <h3>📋 Question Wise Response</h3>
         <table class="yn-table"><thead><tr><th>#</th><th>Question</th><th>Yes</th><th>No</th><th>Yes %</th><th style="width:180px">Distribution</th></tr></thead><tbody id="tbody-business"></tbody></table>
       </div>
     </div>
@@ -247,77 +192,196 @@
 
 <script>
 // ==================== DATA ====================
-const DATA = {"member":{"total":140,"districts":{"Barwani":52,"Raisen":44,"Vidisha":44},"blocks":{"Obedullaganj":36,"Ganj Basoda":34,"Pati":32,"Barwani":20,"Vidisha":10,"Sanchi":8},"education":{"Primary":71,"No Formal Education":37,"Secondary":32},"marital":{"Married":125,"Unmarried":9,"Widow":6},"age":{"30-45":65,"18-30":59,"45-60":16},"shg":{"No":90,"Yes":50},"dependents":{"2":34,"1":30,"0":29,"More than 3":23,"3":23},"district_block":[{"District Name":"Barwani","Block Name":"Barwani","count":20},{"District Name":"Barwani","Block Name":"Pati","count":32},{"District Name":"Raisen","Block Name":"Obedullaganj","count":36},{"District Name":"Raisen","Block Name":"Sanchi","count":8},{"District Name":"Vidisha","Block Name":"Ganj Basoda","count":34},{"District Name":"Vidisha","Block Name":"Vidisha","count":10}]},"financial":{"total":130,"districts":{"Barwani":51,"Vidisha":40,"Raisen":39},"blocks":{"Ganj Basoda":32,"Obedullaganj":31,"Pati":29,"Barwani":22,"Sanchi":8,"Vidisha":8},"questions":{"Q1# Can the participant identify examples of formal financia":{"Yes":119,"No":11},"Q2# Can the participant list types of bank accounts (savings":{"Yes":91,"No":39},"Q3# Can the participant explain the benefits of having a ban":{"Yes":122,"No":8},"Q4# Is the participant aware of savings options like FD, RD,":{"Yes":98,"No":32},"Q5# Can the participant explain what an inactive/dormant acc":{"Yes":38,"No":92},"Q6# Does the participant understand what insurance is, its i":{"Yes":107,"No":23},"Q7# Can the participant describe at least one government fin":{"Yes":119,"No":11},"Q8# Can the participant define credit and explain why formal":{"Yes":83,"No":47},"Q9# Does the participant demonstrate understanding of respon":{"Yes":107,"No":23},"Q10# Can the participant describe at least one government cr":{"Yes":106,"No":24},"Q11# Can the participant discuss the pros and cons of borrow":{"Yes":117,"No":13},"Q12# Can the participant clearly define income and expenses?":{"Yes":109,"No":21},"Q13# Can the participant prepare a simple budget for a house":{"Yes":75,"No":55},"Q14# Can the participant track income and expenses using a s":{"Yes":62,"No":68},"Q15# Can the participant calculate profit from a simple shop":{"Yes":56,"No":74},"Q16# Can the participant define what a credit score is?":{"Yes":76,"No":54},"Q17# Has the participant demonstrated overall understanding ":{"Yes":78,"No":52},"Q18# Does the participant show readiness to approach formal ":{"Yes":81,"No":49},"Q19# Has the participant shown improved confidence and comfo":{"Yes":70,"No":60}}},"digital":{"total":114,"districts":{"Barwani":43,"Raisen":36,"Vidisha":35},"blocks":{"Obedullaganj":28,"Ganj Basoda":28,"Pati":25,"Barwani":18,"Sanchi":8,"Vidisha":7},"questions":{"Can the participant explain what digital banking and digital":{"Yes":113,"No":1},"Can the participant explain what UPI is and its key benefits":{"Yes":87,"No":27},"Can the participant explain how to send/receive money using ":{"Yes":83,"No":31},"Can the participant identify a UPI ID / VPA and QR code?":{"Yes":68,"No":46},"Is the participant able to list safety rules for UPI?":{"Yes":70,"No":44},"Can the participant explain what mobile banking is and its u":{"Yes":91,"No":23},"Can the participant list 2\u20133 precautions while using mobile ":{"Yes":83,"No":31},"Can the participant explain what an ATM is and how to withdr":{"Yes":92,"No":22},"Can the participant list at least two services provided by B":{"Yes":82,"No":32},"Can the participant identify common digital fraud types (phi":{"Yes":87,"No":27},"Can the participant explain the correct complaint escalation":{"Yes":57,"No":57},"Can the participant define bookkeeping and why it is importa":{"Yes":94,"No":20},"Can the participant demonstrate how to record a sale or expe":{"Yes":86,"No":28},"Is the participant aware of at least one government scheme r":{"Yes":110,"No":4}}},"market":{"total":106,"districts":{"Barwani":43,"Vidisha":34,"Raisen":29},"blocks":{"Ganj Basoda":27,"Pati":25,"Obedullaganj":23,"Barwani":18,"Vidisha":7,"Sanchi":6},"questions":{"Q1. Can the participant explain what market access means and":{"Yes":76,"No":30},"Q2. Can the participant list at least two ways to access or ":{"Yes":84,"No":22},"Q3. Can the participant explain why joining vendor/wholesale":{"Yes":68,"No":38},"Q4. Can the participant explain the FIFO (First-In-First-Out":{"Yes":78,"No":28},"Q5. Can the participant identify at least two strategies to ":{"Yes":89,"No":17},"Q6. Can the participant explain the basics of selling online":{"Yes":75,"No":31},"Q7. Can the participant identify at least one online selling":{"Yes":77,"No":29},"Q8. Can the participant set up or describe the elements of a":{"Yes":83,"No":23},"Q9. Can the participant create or explain a simple product p":{"Yes":72,"No":34},"Q10. Can the participant explain the correct use of WhatsApp":{"Yes":70,"No":36},"Q11. Can the participant explain what the Women Entrepreneur":{"Yes":74,"No":32},"Q12. Can the participant explain what Udyam Registration is ":{"Yes":84,"No":22},"Q13. Can the participant identify the basic documents needed":{"Yes":90,"No":16},"Q14. Can the participant demonstrate good customer communica":{"Yes":73,"No":33},"Q15. Can the participant demonstrate basic negotiation skill":{"Yes":77,"No":29}}},"business":{"total":108,"districts":{"Barwani":42,"Vidisha":34,"Raisen":32},"blocks":{"Ganj Basoda":27,"Obedullaganj":26,"Pati":24,"Barwani":18,"Vidisha":7,"Sanchi":6},"questions":{"Q1. Can the participant explain demand forecasting and why i":{"Yes":71,"No":37},"Q2. Can the participant identify customer/seasonal trends th":{"Yes":65,"No":43},"Q3. Can the participant use simple tools (sales diary, chart":{"Yes":75,"No":33},"Q4. Can the participant logically arrange products (grouping":{"Yes":69,"No":39},"Q5. Can the participant explain the difference between upsel":{"Yes":69,"No":39},"Q6. Can the participant classify products as Hero, Friend, a":{"Yes":64,"No":44},"Q7. Can the participant list basic compliance requirements (":{"Yes":68,"No":40},"Q8. Can the participant explain key shopkeeping Do\u2019s & Don\u2019t":{"Yes":60,"No":48},"Q9. Can the participant maintain simple daily records (sales":{"Yes":64,"No":44},"Q10. Can the participant explain how to handle customer comp":{"Yes":60,"No":48},"Q11. Can the participant explain what a business plan is and":{"Yes":61,"No":47},"Q12. Can she identify key parts of a business plan (products":{"Yes":63,"No":45},"Q13. Can she describe her customer segments and nearest comp":{"Yes":68,"No":40},"Q14. Can she identify her main products/services and explain":{"Yes":63,"No":45},"Q15. Can she compare suppliers based on price, credit terms,":{"Yes":63,"No":45},"Q16. Can she draft a basic business plan outline with short-":{"Yes":64,"No":44},"Q17. Has the participant demonstrated improved shop layout/p":{"Yes":78,"No":30},"Q18. Can the participant identify at least one diversificati":{"Yes":74,"No":34}}}};
-
-// Full question labels for readability
-const QLABELS = {
-  financial: ["Identify formal financial services","List types of bank accounts","Explain benefits of bank account","Aware of savings options (FD/RD/PPF)","Explain inactive/dormant account","Understand insurance & importance","Describe govt financial scheme","Define credit & formal credit","Demonstrate responsible borrowing","Describe govt credit scheme","Pros & cons of borrowing","Define income and expenses","Prepare simple household budget","Track income & expenses","Calculate profit from shop case","Define credit score","Demonstrated overall understanding","Show readiness for formal institutions","Improved confidence in financial matters"],
-  digital: ["Explain digital banking & payments","Explain UPI & key benefits","Send/receive money via UPI app","Identify UPI ID / VPA and QR code","List UPI safety rules","Explain mobile banking & uses","List precautions for mobile banking","Explain ATM & safe withdrawal","List services provided by BCs","Identify digital fraud types","Explain complaint escalation path","Define bookkeeping for kirana shop","Record sale/expense in MeraBills","Aware of govt scheme for women entrepreneurs"],
-  market: ["Explain market access & channel types","List offline market expansion ways","Explain WhatsApp vendor group benefits","Explain FIFO concept","Strategies to retain customers","Explain basics of selling online","Identify online selling platforms","Set up WhatsApp Business profile","Create simple product post","Use WhatsApp groups/broadcasts correctly","Explain Women Entrepreneurship Platform (WEP)","Explain Udyam Registration","Identify documents for Udyam","Demonstrate customer communication","Demonstrate basic negotiation skills"],
-  business: ["Explain demand forecasting","Identify seasonal/customer trends","Use simple demand tools (MeraBills)","Logically arrange products","Explain upselling vs cross-selling","Classify Hero/Friend/Villain products","List basic compliance requirements","Explain shopkeeping Do's & Don'ts","Maintain daily records","Handle customer complaints & safety","Explain what a business plan is","Identify key parts of a business plan","Describe customer segments & competitors","Identify main products & pricing","Compare suppliers","Draft business plan outline","Demonstrated improved shop layout","Identify diversification step (30 days)"]
+// Member data: Active + blank Status only (133 total)
+const MEMBER = {
+  total: 133,
+  district_block: {
+    "Barwani":   {"Barwani":19,"Pati":30},
+    "Raisen":    {"Obedullaganj":33,"Sanchi":8},
+    "Vidisha":   {"Ganj Basoda":33,"Vidisha":10}
+  },
+  // Profile data (all members, used for profile charts — proportionally scaled)
+  education: {"Primary":65,"No Formal Education":37,"Secondary":31},
+  marital:   {"Married":119,"Unmarried":8,"Widow":6},
+  age:       {"18-30":55,"30-45":62,"45-60":16},
+  shg:       {"Not in SHG":83,"SHG Member":50}
 };
 
-const COLORS = {
-  districts: ['#1a56db','#f59e0b','#10b981'],
-  blocks: ['#1a56db','#7c3aed','#f59e0b','#10b981','#ef4444','#06b6d4'],
-  pie: ['#1a56db','#f59e0b','#10b981','#ef4444','#7c3aed','#06b6d4']
+const QDATA = {
+  financial: {
+    total:130,
+    districts:{"Barwani":51,"Vidisha":40,"Raisen":39},
+    blocks:{"Ganj Basoda":32,"Obedullaganj":31,"Pati":29,"Barwani":22,"Sanchi":8,"Vidisha":8},
+    questions:[
+      {l:"Identify examples of formal financial services",Yes:119,No:11},
+      {l:"List types of bank accounts",Yes:91,No:39},
+      {l:"Explain benefits of having a bank account",Yes:122,No:8},
+      {l:"Aware of savings options (FD/RD/PPF)",Yes:98,No:32},
+      {l:"Explain inactive/dormant account",Yes:38,No:92},
+      {l:"Understand insurance & its importance",Yes:107,No:23},
+      {l:"Describe a govt financial scheme",Yes:119,No:11},
+      {l:"Define credit & why formal credit matters",Yes:83,No:47},
+      {l:"Demonstrate responsible borrowing understanding",Yes:107,No:23},
+      {l:"Describe a govt credit scheme",Yes:106,No:24},
+      {l:"Discuss pros & cons of borrowing",Yes:117,No:13},
+      {l:"Define income and expenses",Yes:109,No:21},
+      {l:"Prepare a simple household budget",Yes:75,No:55},
+      {l:"Track income & expenses using a simple tool",Yes:62,No:68},
+      {l:"Calculate profit from a simple shop case",Yes:56,No:74},
+      {l:"Define what a credit score is",Yes:76,No:54},
+      {l:"Demonstrated overall financial understanding",Yes:78,No:52},
+      {l:"Show readiness to approach formal institutions",Yes:81,No:49},
+      {l:"Improved confidence in financial matters",Yes:70,No:60}
+    ]
+  },
+  digital: {
+    total:114,
+    districts:{"Barwani":43,"Raisen":36,"Vidisha":35},
+    blocks:{"Obedullaganj":28,"Ganj Basoda":28,"Pati":25,"Barwani":18,"Sanchi":8,"Vidisha":7},
+    questions:[
+      {l:"Explain digital banking & digital payments",Yes:113,No:1},
+      {l:"Explain UPI & its key benefits",Yes:87,No:27},
+      {l:"Send/receive money using a UPI app",Yes:83,No:31},
+      {l:"Identify a UPI ID / VPA and QR code",Yes:68,No:46},
+      {l:"List safety rules for UPI",Yes:70,No:44},
+      {l:"Explain mobile banking & its uses",Yes:91,No:23},
+      {l:"List 2-3 precautions for mobile banking",Yes:83,No:31},
+      {l:"Explain ATM & how to withdraw safely",Yes:92,No:22},
+      {l:"List services provided by BCs (Bank Mitras)",Yes:82,No:32},
+      {l:"Identify common digital fraud types",Yes:87,No:27},
+      {l:"Explain complaint escalation path",Yes:57,No:57},
+      {l:"Define bookkeeping for a kirana shop",Yes:94,No:20},
+      {l:"Record a sale/expense in MeraBills app",Yes:86,No:28},
+      {l:"Aware of govt scheme for women entrepreneurs",Yes:110,No:4}
+    ]
+  },
+  market: {
+    total:106,
+    districts:{"Barwani":43,"Vidisha":34,"Raisen":29},
+    blocks:{"Ganj Basoda":27,"Pati":25,"Obedullaganj":23,"Barwani":18,"Vidisha":7,"Sanchi":6},
+    questions:[
+      {l:"Explain market access & identify channel types",Yes:76,No:30},
+      {l:"List ways to access/expand offline markets",Yes:84,No:22},
+      {l:"Explain vendor WhatsApp group benefits",Yes:68,No:38},
+      {l:"Explain the FIFO concept",Yes:78,No:28},
+      {l:"Identify strategies to retain customers",Yes:89,No:17},
+      {l:"Explain basics of selling online",Yes:75,No:31},
+      {l:"Identify online selling platforms for kirana",Yes:77,No:29},
+      {l:"Set up/describe WhatsApp Business profile",Yes:83,No:23},
+      {l:"Create a simple product post",Yes:72,No:34},
+      {l:"Use WhatsApp groups/broadcasts correctly",Yes:70,No:36},
+      {l:"Explain Women Entrepreneurship Platform (WEP)",Yes:74,No:32},
+      {l:"Explain Udyam Registration & its importance",Yes:84,No:22},
+      {l:"Identify documents needed for Udyam",Yes:90,No:16},
+      {l:"Demonstrate good customer communication",Yes:73,No:33},
+      {l:"Demonstrate basic negotiation skills",Yes:77,No:29}
+    ]
+  },
+  business: {
+    total:108,
+    districts:{"Barwani":42,"Vidisha":34,"Raisen":32},
+    blocks:{"Ganj Basoda":27,"Obedullaganj":26,"Pati":24,"Barwani":18,"Vidisha":7,"Sanchi":6},
+    questions:[
+      {l:"Explain demand forecasting & its importance",Yes:71,No:37},
+      {l:"Identify customer/seasonal trends for demand",Yes:65,No:43},
+      {l:"Use simple demand tools (MeraBills/diary)",Yes:75,No:33},
+      {l:"Logically arrange products in shop",Yes:69,No:39},
+      {l:"Explain difference between upselling & cross-selling",Yes:69,No:39},
+      {l:"Classify products as Hero/Friend/Villain",Yes:64,No:44},
+      {l:"List basic compliance requirements",Yes:68,No:40},
+      {l:"Explain shopkeeping Do's & Don'ts",Yes:60,No:48},
+      {l:"Maintain simple daily records",Yes:64,No:44},
+      {l:"Handle customer complaints & shop safety",Yes:60,No:48},
+      {l:"Explain what a business plan is",Yes:61,No:47},
+      {l:"Identify key parts of a business plan",Yes:63,No:45},
+      {l:"Describe customer segments & competitors",Yes:68,No:40},
+      {l:"Identify main products & pricing strategy",Yes:63,No:45},
+      {l:"Compare suppliers by price/credit/reliability",Yes:63,No:45},
+      {l:"Draft a basic business plan outline",Yes:64,No:44},
+      {l:"Demonstrated improved shop layout techniques",Yes:78,No:30},
+      {l:"Identify a diversification step for next 30 days",Yes:74,No:34}
+    ]
+  }
 };
 
+const DIST_COLORS = ['#1a56db','#f59e0b','#10b981'];
+const BLOCK_COLORS = ['#1a56db','#7c3aed','#f59e0b','#10b981','#ef4444','#06b6d4'];
 let charts = {};
-const pages = {
-  member: { title:'Member Profile', sub:'Overview of enrolled women members across districts' },
-  financial: { title:'Financial Literacy', sub:'Post-assessment responses across 19 questions' },
-  digital: { title:'Digital Literacy', sub:'Post-assessment responses across 14 questions' },
-  market: { title:'Access to Market', sub:'Post-assessment responses across 15 questions' },
-  business: { title:'Business Development', sub:'Post-assessment responses across 18 questions' }
+
+const PAGE_META = {
+  member:    {title:'Member Profile',         sub:'Active & enrolled women members (Status: Active or blank)'},
+  financial: {title:'Financial Literacy',     sub:'Post-assessment responses — 19 questions'},
+  digital:   {title:'Digital Literacy',       sub:'Post-assessment responses — 14 questions'},
+  market:    {title:'Access to Market',       sub:'Post-assessment responses — 15 questions'},
+  business:  {title:'Business Development',   sub:'Post-assessment responses — 18 questions'}
 };
 
 function showPage(id, el) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   if(el) el.classList.add('active');
-  document.getElementById('page-title').textContent = pages[id].title;
-  document.getElementById('page-sub').textContent = pages[id].sub;
+  document.getElementById('page-title').textContent = PAGE_META[id].title;
+  document.getElementById('page-sub').textContent   = PAGE_META[id].sub;
 }
 
 function mkChart(id, type, labels, datasets, opts={}) {
-  if(charts[id]) charts[id].destroy();
+  if(charts[id]) { charts[id].destroy(); delete charts[id]; }
   const ctx = document.getElementById(id);
   if(!ctx) return;
   charts[id] = new Chart(ctx, {
     type, data:{labels, datasets},
-    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:10}}}, ...opts }
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:10}}}, ...opts}
   });
-  return charts[id];
 }
 
-// ========== MEMBER CHARTS ==========
-function buildMemberCharts(district='', block='') {
-  let db = DATA.member.district_block;
-  if(district) db = db.filter(r=>r['District Name']===district);
-  if(block) db = db.filter(r=>r['Block Name']===block);
+// ========== MEMBER ==========
+function buildMemberCharts(district, block) {
+  const db = MEMBER.district_block;
+  const distMap = {}, blockMap = {};
 
-  const distMap={}, blockMap={};
-  db.forEach(r=>{ distMap[r['District Name']]=(distMap[r['District Name']]||0)+r.count; blockMap[r['Block Name']]=(blockMap[r['Block Name']]||0)+r.count; });
+  Object.entries(db).forEach(([d,blocks]) => {
+    if(district && d!==district) return;
+    Object.entries(blocks).forEach(([b,cnt]) => {
+      if(block && b!==block) return;
+      distMap[d] = (distMap[d]||0)+cnt;
+      blockMap[b] = (blockMap[b]||0)+cnt;
+    });
+  });
 
-  const total=Object.values(distMap).reduce((a,b)=>a+b,0);
-  const ndist=Object.keys(distMap).length, nblock=Object.keys(blockMap).length;
+  const total  = Object.values(distMap).reduce((a,b)=>a+b,0)||0;
+  const ndist  = Object.keys(distMap).length;
+  const nblock = Object.keys(blockMap).length;
+  const ratio  = MEMBER.total ? total/MEMBER.total : 0;
+  const shgYes = Math.round(MEMBER.shg['SHG Member']*ratio);
 
-  // Compute SHG filtered (simplified - use proportional)
-  const ratio = total/DATA.member.total;
-  const shgYes=Math.round(DATA.member.shg.Yes*ratio);
-  document.getElementById('m-total').textContent=total;
-  document.getElementById('m-dist').textContent=ndist;
-  document.getElementById('m-block').textContent=nblock;
-  document.getElementById('m-shg').textContent=shgYes;
+  document.getElementById('m-total').textContent = total;
+  document.getElementById('m-dist').textContent  = ndist;
+  document.getElementById('m-block').textContent = nblock;
+  document.getElementById('m-shg').textContent   = shgYes;
 
-  mkChart('c-m-district','bar',Object.keys(distMap),[{label:'Members',data:Object.values(distMap),backgroundColor:COLORS.districts,borderRadius:6}],{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}});
-  mkChart('c-m-block','bar',Object.keys(blockMap),[{label:'Members',data:Object.values(blockMap),backgroundColor:COLORS.blocks,borderRadius:6}],{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}},indexAxis:'y'});
-  mkChart('c-m-edu','doughnut',Object.keys(DATA.member.education),[{data:Object.values(DATA.member.education),backgroundColor:['#1a56db','#f59e0b','#10b981'],borderWidth:2,borderColor:'#fff'}]);
-  mkChart('c-m-marital','pie',Object.keys(DATA.member.marital),[{data:Object.values(DATA.member.marital),backgroundColor:['#10b981','#f59e0b','#ef4444'],borderWidth:2,borderColor:'#fff'}]);
-  mkChart('c-m-age','bar',Object.keys(DATA.member.age),[{label:'Members',data:Object.values(DATA.member.age),backgroundColor:['#1a56db','#7c3aed','#06b6d4'],borderRadius:6}],{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}});
-  mkChart('c-m-shg','doughnut',['Not in SHG','SHG Member'],[{data:[DATA.member.shg.No,DATA.member.shg.Yes],backgroundColor:['#e2e8f0','#10b981'],borderWidth:2,borderColor:'#fff'}]);
+  mkChart('c-m-district','bar',Object.keys(distMap),
+    [{label:'Members',data:Object.values(distMap),backgroundColor:DIST_COLORS,borderRadius:6}],
+    {plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}});
+
+  mkChart('c-m-block','bar',Object.keys(blockMap),
+    [{label:'Members',data:Object.values(blockMap),backgroundColor:BLOCK_COLORS,borderRadius:6}],
+    {plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}},indexAxis:'y'});
+
+  // Profile charts — use fixed active-member data (not district-filterable since no raw data)
+  mkChart('c-m-edu','doughnut',Object.keys(MEMBER.education),
+    [{data:Object.values(MEMBER.education),backgroundColor:['#1a56db','#f59e0b','#10b981'],borderWidth:2,borderColor:'#fff'}]);
+
+  mkChart('c-m-marital','pie',Object.keys(MEMBER.marital),
+    [{data:Object.values(MEMBER.marital),backgroundColor:['#10b981','#f59e0b','#ef4444'],borderWidth:2,borderColor:'#fff'}]);
+
+  mkChart('c-m-age','bar',Object.keys(MEMBER.age),
+    [{label:'Members',data:Object.values(MEMBER.age),backgroundColor:['#1a56db','#7c3aed','#06b6d4'],borderRadius:6}],
+    {plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}});
+
+  mkChart('c-m-shg','doughnut',Object.keys(MEMBER.shg),
+    [{data:Object.values(MEMBER.shg),backgroundColor:['#e2e8f0','#10b981'],borderWidth:2,borderColor:'#fff'}]);
 }
 
 function applyMemberFilter() {
@@ -325,113 +389,82 @@ function applyMemberFilter() {
   const b=document.getElementById('f-member-block').value;
   buildMemberCharts(d,b);
 }
-function resetFilter(section) {
-  if(section==='member'){document.getElementById('f-member-district').value='';document.getElementById('f-member-block').value='';buildMemberCharts();}
-  else { const map={financial:'fin',digital:'dig',market:'mkt',business:'biz'}; const pfx=map[section]; document.getElementById('f-'+pfx+'-district').value='';document.getElementById('f-'+pfx+'-block').value='';buildQPage(section);}
-}
 
 // ========== QUESTION PAGES ==========
-function filterQuestions(section, district, block) {
-  // Since we only have aggregated data, filter by district/block proportionally
-  const sd=DATA[section];
-  if(!district&&!block) return sd.questions;
-  
-  // Proportional filter
-  let ratio=1;
-  if(district&&!block) ratio=(sd.districts[district]||0)/sd.total;
-  else if(block&&!district) ratio=(sd.blocks[block]||0)/sd.total;
-  else if(district&&block) {
-    const blockTotal=sd.blocks[block]||0;
-    ratio=blockTotal/sd.total;
-  }
-  
-  const filtered={};
-  Object.entries(sd.questions).forEach(([q,v])=>{
-    filtered[q]={Yes:Math.round(v.Yes*ratio),No:Math.round(v.No*ratio)};
-  });
-  return filtered;
+function getFilteredTotals(section, district, block) {
+  const sd = QDATA[section];
+  if(!district && !block) return {total:sd.total, ndist:Object.keys(sd.districts).length, nblock:Object.keys(sd.blocks).length, ratio:1};
+  let ratio=1, ndist=Object.keys(sd.districts).length, nblock=Object.keys(sd.blocks).length;
+  if(district && !block) { ratio=(sd.districts[district]||0)/sd.total; ndist=1; }
+  else if(!district && block) { ratio=(sd.blocks[block]||0)/sd.total; nblock=1; }
+  else { ratio=(sd.blocks[block]||0)/sd.total; ndist=1; nblock=1; }
+  return {total:Math.round(sd.total*ratio), ndist, nblock, ratio};
 }
 
-function buildQPage(section) {
-  const map={financial:['fin','c-fin-bar','c-fin-radar'],digital:['dig','c-dig-bar','c-dig-doughnut'],market:['mkt','c-mkt-bar','c-mkt-line'],business:['biz','c-biz-bar','c-biz-line']};
-  const [pfx, barId, secId]=map[section];
-  const d=document.getElementById('f-'+pfx+'-district').value;
-  const b=document.getElementById('f-'+pfx+'-block').value;
-
-  const qs=filterQuestions(section,d,b);
-  const sd=DATA[section];
-
-  // Compute display total
-  const distMap=d?{[d]:sd.districts[d]||0}:sd.districts;
-  const blkMap=b?{[b]:sd.blocks[b]||0}:sd.blocks;
-  const total=d?distMap[d]:(b?blkMap[b]:sd.total);
-  const ndist=d?1:Object.keys(sd.districts).length;
-  const nblk=b?1:Object.keys(sd.blocks).length;
-
-  document.getElementById(pfx+'-total').textContent=total||'—';
-  document.getElementById(pfx+'-dist').textContent=ndist;
-  document.getElementById(pfx+'-block').textContent=nblk;
-
-  const labels=QLABELS[section]||Object.keys(qs).map((q,i)=>`Q${i+1}`);
-  const qArr=Object.entries(qs);
-  const yesVals=qArr.map(([,v])=>v.Yes);
-  const noVals=qArr.map(([,v])=>v.No);
-  const yesPcts=qArr.map(([,v])=>{const t=v.Yes+v.No; return t?Math.round(v.Yes/t*100):0;});
-
-  // Avg yes rate
-  const avg=yesPcts.length?Math.round(yesPcts.reduce((a,b)=>a+b,0)/yesPcts.length):0;
-  document.getElementById(pfx+'-avgyes').textContent=avg+'%';
-
-  // Bar chart (first 10)
-  const top10=Math.min(10,qArr.length);
-  mkChart(barId,'bar',labels.slice(0,top10),[
-    {label:'Yes',data:yesVals.slice(0,top10),backgroundColor:'#10b981',borderRadius:4},
-    {label:'No',data:noVals.slice(0,top10),backgroundColor:'#ef4444',borderRadius:4}
-  ],{scales:{x:{stacked:false,ticks:{font:{size:9}}},y:{beginAtZero:true}},plugins:{legend:{position:'top',labels:{font:{size:11},boxWidth:10}}}});
-
-  // Second chart
-  if(section==='financial'){
-    // Radar / polar
-    mkChart(secId,'polarArea',labels.slice(0,10),[{data:yesPcts.slice(0,10),backgroundColor:labels.slice(0,10).map((_,i)=>`hsla(${i*36},70%,55%,0.7)`)}],{scales:{r:{beginAtZero:true,max:100}},plugins:{legend:{display:false}}});
-  } else if(section==='digital'){
-    mkChart(secId,'doughnut',labels,[{data:yesPcts,backgroundColor:labels.map((_,i)=>`hsl(${i*25},65%,55%)`),borderWidth:1,borderColor:'#fff'}]);
-  } else {
-    // Line chart
-    mkChart(secId,'line',labels,[{label:'Yes %',data:yesPcts,borderColor:'#1a56db',backgroundColor:'rgba(26,86,219,0.1)',tension:.3,fill:true,pointRadius:4,pointBackgroundColor:'#1a56db'}],{scales:{y:{beginAtZero:true,max:100,ticks:{callback:v=>v+'%'}}},plugins:{legend:{display:false}}});
-  }
-
-  // Table
-  const tbody=document.getElementById('tbody-'+section);
-  tbody.innerHTML='';
-  qArr.forEach(([q,v],i)=>{
-    const total=v.Yes+v.No;
-    const pct=total?Math.round(v.Yes/total*100):0;
-    const lbl=labels[i]||q.replace(/^Q\d+[#\.]?\s*/,'').trim();
-    tbody.innerHTML+=`<tr>
-      <td style="color:var(--muted);font-size:11px">Q${i+1}</td>
-      <td class="q-label">${lbl}</td>
-      <td><span class="yes-pill">${v.Yes}</span></td>
-      <td><span class="no-pill">${v.No}</span></td>
+function buildQTable(section, ratio) {
+  const qs = QDATA[section].questions;
+  const tbody = document.getElementById('tbody-'+section);
+  tbody.innerHTML = '';
+  qs.forEach((q,i) => {
+    const yes = Math.round(q.Yes*ratio), no = Math.round(q.No*ratio);
+    const tot = yes+no;
+    const pct = tot ? Math.round(yes/tot*100) : 0;
+    tbody.innerHTML += `<tr>
+      <td style="color:var(--muted);font-size:11px;white-space:nowrap">Q${i+1}</td>
+      <td class="q-label">${q.l}</td>
+      <td><span class="yes-pill">${yes}</span></td>
+      <td><span class="no-pill">${no}</span></td>
       <td><strong>${pct}%</strong></td>
-      <td>
-        <div class="yn-bar-wrap">
-          <div class="yn-bar"><div class="yes-seg" style="width:${pct}%"></div></div>
-          <span class="yn-pct">${pct}%</span>
-        </div>
-      </td>
+      <td><div class="yn-bar-wrap"><div class="yn-bar"><div class="yes-seg" style="width:${pct}%"></div></div><span class="yn-pct">${pct}%</span></div></td>
     </tr>`;
   });
 }
 
+function buildLinechart(canvasId, section, ratio) {
+  const qs = QDATA[section].questions;
+  const labels = qs.map((q,i)=>`Q${i+1}`);
+  const pcts = qs.map(q=>{ const yes=Math.round(q.Yes*ratio),no=Math.round(q.No*ratio),t=yes+no; return t?Math.round(yes/t*100):0; });
+  mkChart(canvasId,'line',labels,
+    [{label:'Yes %',data:pcts,borderColor:'#1a56db',backgroundColor:'rgba(26,86,219,0.08)',tension:.35,fill:true,pointRadius:5,pointBackgroundColor:'#1a56db',pointBorderColor:'#fff',pointBorderWidth:2}],
+    {scales:{y:{beginAtZero:true,max:100,ticks:{callback:v=>v+'%'}}},
+     plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`Yes: ${ctx.parsed.y}%`}}}});
+}
+
+function buildQPage(section) {
+  const pfxMap = {financial:'fin',digital:'dig',market:'mkt',business:'biz'};
+  const pfx = pfxMap[section];
+  const d = document.getElementById('f-'+pfx+'-district').value;
+  const b = document.getElementById('f-'+pfx+'-block').value;
+  const {total,ndist,nblock,ratio} = getFilteredTotals(section,d,b);
+
+  document.getElementById(pfx+'-total').textContent = total||'—';
+  document.getElementById(pfx+'-dist').textContent  = ndist;
+  document.getElementById(pfx+'-block').textContent = nblock;
+
+  buildQTable(section, ratio);
+  if(section==='market')   buildLinechart('c-mkt-line',section,ratio);
+  if(section==='business') buildLinechart('c-biz-line',section,ratio);
+}
+
 function applyQFilter(section) { buildQPage(section); }
 
+function resetFilter(section) {
+  if(section==='member') {
+    document.getElementById('f-member-district').value='';
+    document.getElementById('f-member-block').value='';
+    buildMemberCharts();
+  } else {
+    const pfx={financial:'fin',digital:'dig',market:'mkt',business:'biz'}[section];
+    document.getElementById('f-'+pfx+'-district').value='';
+    document.getElementById('f-'+pfx+'-block').value='';
+    buildQPage(section);
+  }
+}
+
 // ========== INIT ==========
-window.addEventListener('load', ()=>{
+window.addEventListener('load', () => {
   buildMemberCharts();
-  buildQPage('financial');
-  buildQPage('digital');
-  buildQPage('market');
-  buildQPage('business');
+  ['financial','digital','market','business'].forEach(s=>buildQPage(s));
 });
 </script>
 </body>
